@@ -155,12 +155,22 @@ public class PayStationImplTest {
                 10, ps.readDisplay());
     }
 
+    /**
+     * Verify that empty returns the total amount collected over several transactions.
+     */
+    @Test
+    public void shouldReturnTotalWhenEmptied() throws IllegalCoinException {
 
+        ps.addPayment(10);
+        ps.addPayment(10);
+        ps.buy();
 
+        ps.addPayment(10);
+        ps.addPayment(10);
+        ps.buy();
 
-
-
-    
+        assertEquals("Empty should return the total amount collected", 40, ps.empty());
+    }
     
     /**
      * Verify that the canceled entry does not add to the amount returned by
@@ -176,7 +186,6 @@ public class PayStationImplTest {
         ps.addPayment(amountAdded);
         ps.cancel();
         assertEquals("Canceled coin should not be added to total", amountAdded, ps.empty());
-        
     }
     
     /**
@@ -272,6 +281,4 @@ public class PayStationImplTest {
         ps.buy();
         assertTrue("Coin map should be empty after buy", ps.cancel().isEmpty());
     }
-    
-    
 }
