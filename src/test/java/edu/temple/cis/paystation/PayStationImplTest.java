@@ -170,13 +170,12 @@ public class PayStationImplTest {
     @Test
     public void cancelShouldNotAddToEmpty() throws Exception
     {
-        PayStationImpl instance = new PayStationImpl();
         int amountAdded = 25;
-        instance.addPayment(amountAdded);
-        instance.cancel();
-        instance.addPayment(amountAdded);
-        int result = instance.empty();
-        assertEquals(amountAdded, result);
+        ps.addPayment(amountAdded);
+        ps.buy();
+        ps.addPayment(amountAdded);
+        ps.cancel();
+        assertEquals("Canceled coin should not be added to total", amountAdded, ps.empty());
         
     }
     
@@ -187,12 +186,11 @@ public class PayStationImplTest {
     @Test
     public void testEmptyZero() throws Exception
     {
-        PayStationImpl instance = new PayStationImpl();
         int amountAdded = 10;
-        instance.addPayment(amountAdded);
-        instance.empty();
-        int result = instance.empty();
-        assertEquals(0, result);
+        ps.addPayment(amountAdded);
+        ps.buy();
+        ps.empty();
+        assertEquals("Total amount of money should be 0", 0, ps.empty());
     }
     
     /**
@@ -203,11 +201,26 @@ public class PayStationImplTest {
     @Test
     public void test1CoinMapReturn() throws Exception
     {
-        PayStationImpl instance = new PayStationImpl();
         int amountAdded = 25;
-        instance.addPayment(amountAdded);
-        int result = instance.cancel().get(3);
-        assertEquals(1, result);
+        ps.addPayment(amountAdded);
+        assertEquals("Coin map should contain 1 quarter", 1, (int)ps.cancel().get(25)); //Need cast to avoid ambiguous overload error
+    }
+    
+    /**
+     * Verify that cancel returns a map that does not contain a key for a coin not entered.
+     * @throws Exception 
+     */
+    @Test
+    public void testNoCoinMapReturn() throws Exception
+    {
+        ps.addPayment(10);
+        ps.addPayment(10);
+        ps.addPayment(5);
+        Map<Integer, Integer> answer = new HashMap<>(){{
+            put(2, 2);
+            put(1, 1);
+        }};
+        assertFalse("Coin map should not contain a key for " + 25, ps.cancel().containsKey(25));
     }
     
     /**
@@ -216,45 +229,18 @@ public class PayStationImplTest {
      * @throws Exception 
      */
     @Test
-    public void testNoCoinMapReturn() throws Exception
-    {
-        PayStationImpl instance = new PayStationImpl();
-        int quarter = 25;
-        int dime = 10;
-        int nickle = 5;
-        //instance.addPayment(quarter);
-        instance.addPayment(dime);
-        instance.addPayment(dime);
-        instance.addPayment(nickle);
-        Map answer = new HashMap();
-        //answer.put(1, 1);
-        answer.put(2, 2);
-        answer.put(1, 1);
-        Map result = instance.cancel();
-        assertEquals(answer, result);
-    }
-    
-    /**
-     * Verify that cancel returns a map without keys when no coins are entered.
-     * @throws Exception 
-     */
-    @Test
     public void testMultipleCoinMapReturn() throws Exception
     {
-        PayStationImpl instance = new PayStationImpl();
-        int quarter = 25;
-        int dime = 10;
-        int nickle = 5;
-        instance.addPayment(dime);
-        instance.addPayment(dime);
-        instance.addPayment(quarter);
-        instance.addPayment(nickle);
-        Map answer = new HashMap();
-        answer.put(1, 1);
-        answer.put(2, 2);
-        answer.put(3, 1);
-        Map result = instance.cancel();
-        assertEquals(answer, result);
+        ps.addPayment(10);
+        ps.addPayment(10);
+        ps.addPayment(5);
+        ps.addPayment(25);
+        Map<Integer, Integer> answer = new HashMap<>(){{
+            put(10, 2);
+            put(5, 1);
+            put(25,1);
+        }};
+        assertEquals("Coin map should contain correct number of coins of each type", answer, ps.cancel());
     }
  
     /**
@@ -264,18 +250,12 @@ public class PayStationImplTest {
     @Test
     public void testCancelClearMap() throws Exception
     {
-        PayStationImpl instance = new PayStationImpl();
-        int quarter = 25;
-        int dime = 10;
-        int nickle = 5;
-        instance.addPayment(quarter);
-        instance.addPayment(nickle);
-        instance.addPayment(dime);
-        instance.addPayment(quarter);
-        instance.cancel();
-        Map result = instance.cancel();
-        Map emptyMap = new HashMap();
-        assertEquals(emptyMap, result);
+        ps.addPayment(25);
+        ps.addPayment(5);
+        ps.addPayment(10);
+        ps.addPayment(25);
+        ps.cancel();
+        assertTrue("Coin map should be empty after cancel", ps.cancel().isEmpty());
     }
     
     /**
@@ -285,18 +265,12 @@ public class PayStationImplTest {
     @Test
     public void testBuyClearMap() throws Exception
     {
-        PayStationImpl instance = new PayStationImpl();
-        int quarter = 25;
-        int dime = 10;
-        int nickle = 5;
-        instance.addPayment(quarter);
-        instance.addPayment(nickle);
-        instance.addPayment(dime);
-        instance.addPayment(quarter);
-        instance.buy();
-        Map result = instance.cancel();
-        Map emptyMap = new HashMap();
-        assertEquals(emptyMap, result);
+        ps.addPayment(25);
+        ps.addPayment(5);
+        ps.addPayment(10);
+        ps.addPayment(25);
+        ps.buy();
+        assertTrue("Coin map should be empty after buy", ps.cancel().isEmpty());
     }
     
     
