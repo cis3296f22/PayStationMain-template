@@ -1,4 +1,4 @@
-/**
+/*
  * Testcases for the Pay Station system.
  *
  * This source code is from the book "Flexible, Reliable Software: Using
@@ -24,11 +24,11 @@ public class PayStationImplTest {
     PayStation ps;
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() {
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
+    public static void tearDownClass() {
     }
 
     @Before
@@ -37,11 +37,12 @@ public class PayStationImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
     /**
      * Entering 5 cents should make the display report 2 minutes parking time.
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
     public void shouldDisplay2MinFor5Cents()
@@ -53,6 +54,7 @@ public class PayStationImplTest {
 
     /**
      * Entering 25 cents should make the display report 10 minutes parking time.
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
     public void shouldDisplay10MinFor25Cents() throws IllegalCoinException {
@@ -63,6 +65,7 @@ public class PayStationImplTest {
 
     /**
      * Verify that illegal coin values are rejected.
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test(expected = IllegalCoinException.class)
     public void shouldRejectIllegalCoin() throws IllegalCoinException {
@@ -71,6 +74,7 @@ public class PayStationImplTest {
 
     /**
      * Entering 10 and 25 cents should be valid and return 14 minutes parking
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
     public void shouldDisplay14MinFor10And25Cents()
@@ -83,6 +87,7 @@ public class PayStationImplTest {
 
     /**
      * Buy should return a valid receipt of the proper amount of parking time
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
     public void shouldReturnCorrectReceiptWhenBuy()
@@ -100,6 +105,7 @@ public class PayStationImplTest {
 
     /**
      * Buy for 100 cents and verify the receipt
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
     public void shouldReturnReceiptWhenBuy100c()
@@ -119,6 +125,7 @@ public class PayStationImplTest {
 
     /**
      * Verify that the pay station is cleared after a buy scenario
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
     public void shouldClearAfterBuy()
@@ -142,6 +149,7 @@ public class PayStationImplTest {
 
     /**
      * Verify that cancel clears the pay station
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
     public void shouldClearAfterCancel()
@@ -157,6 +165,7 @@ public class PayStationImplTest {
 
     /**
      * Verify that empty returns the total amount collected over several transactions.
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
     public void shouldReturnTotalWhenEmptied() throws IllegalCoinException {
@@ -175,10 +184,10 @@ public class PayStationImplTest {
     /**
      * Verify that the canceled entry does not add to the amount returned by
      * empty.
-     * @throws Exception 
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
-    public void cancelShouldNotAddToEmpty() throws Exception
+    public void cancelShouldNotAddToEmpty() throws IllegalCoinException
     {
         int amountAdded = 25;
         ps.addPayment(amountAdded);
@@ -190,10 +199,10 @@ public class PayStationImplTest {
     
     /**
      * Very that the empty method resets the total to zero.
-     * @throws Exception 
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
-    public void testEmptyZero() throws Exception
+    public void testEmptyZero() throws IllegalCoinException
     {
         int amountAdded = 10;
         ps.addPayment(amountAdded);
@@ -205,10 +214,10 @@ public class PayStationImplTest {
     /**
      * Verify that cancel returns a map with the correct amount of coins for one
      * coin type.
-     * @throws Exception 
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
-    public void test1CoinMapReturn() throws Exception
+    public void test1CoinMapReturn() throws IllegalCoinException
     {
         int amountAdded = 25;
         ps.addPayment(amountAdded);
@@ -217,25 +226,21 @@ public class PayStationImplTest {
     
     /**
      * Verify that cancel returns a map that does not contain a key for a coin not entered.
-     * @throws Exception 
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
-    public void testNoCoinMapReturn() throws Exception
+    public void testNoCoinMapReturn() throws IllegalCoinException
     {
         ps.addPayment(10);
         ps.addPayment(10);
         ps.addPayment(5);
-        Map<Integer, Integer> answer = new HashMap<>(){{
-            put(2, 2);
-            put(1, 1);
-        }};
         assertFalse("Coin map should not contain a key for " + 25, ps.cancel().containsKey(25));
     }
     
     /**
      * Verify that cancel returns a map with the correct amount of coins for
      * all coin types.
-     * @throws Exception 
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
     public void testMultipleCoinMapReturn() throws Exception
@@ -244,7 +249,7 @@ public class PayStationImplTest {
         ps.addPayment(10);
         ps.addPayment(5);
         ps.addPayment(25);
-        Map<Integer, Integer> answer = new HashMap<>(){{
+        Map<Integer, Integer> answer = new HashMap<Integer, Integer>(){{
             put(10, 2);
             put(5, 1);
             put(25,1);
@@ -254,10 +259,10 @@ public class PayStationImplTest {
  
     /**
      * Verify that cancel clears the map.
-     * @throws Exception 
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
-    public void testCancelClearMap() throws Exception
+    public void testCancelClearMap() throws  IllegalCoinException
     {
         ps.addPayment(25);
         ps.addPayment(5);
@@ -269,10 +274,10 @@ public class PayStationImplTest {
     
     /**
      * Verify that buy clears the map.
-     * @throws Exception 
+     * @throws IllegalCoinException if an improper coin is added
      */
     @Test
-    public void testBuyClearMap() throws Exception
+    public void testBuyClearMap() throws IllegalCoinException
     {
         ps.addPayment(25);
         ps.addPayment(5);
