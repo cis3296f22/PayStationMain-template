@@ -25,6 +25,7 @@ public class PayStationImpl implements PayStation {
     private int insertedSoFar, timeBought, totalMoney;
     private Map<Integer, Integer> coinMap;
 
+    // Constructor initializes instance variables
     public PayStationImpl(){
         insertedSoFar = timeBought = totalMoney = 0;
         coinMap = new HashMap<>();
@@ -43,7 +44,13 @@ public class PayStationImpl implements PayStation {
                 throw new IllegalCoinException("Invalid coin: " + coinValue);
         }
 
+        /*
+         * getOrDefault checks if a given key is present in a map
+         * @returns the value if it exists, or the 'defaultValue' if it does not
+         * add 1 to whatever the result of getOrDefault is and place that value in the map
+         */
         coinMap.put(coinValue, coinMap.getOrDefault(coinValue, 0) + 1);
+
         insertedSoFar += coinValue;
         timeBought = insertedSoFar / 5 * 2;
     }
